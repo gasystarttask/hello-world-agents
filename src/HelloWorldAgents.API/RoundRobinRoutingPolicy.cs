@@ -14,7 +14,7 @@ namespace HelloWorldAgents.API
 
             // Find the last agent that spoke by checking the history
             AIAgent? lastAgent = null;
-            foreach(var message in history)
+            foreach (var message in history.Reverse())
             {
                 if (message.Role == ChatRole.Assistant)
                 {

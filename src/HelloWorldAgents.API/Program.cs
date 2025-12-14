@@ -1,9 +1,12 @@
-using System.ComponentModel;
+using HelloWorldAgents.API;
 using Microsoft.Agents.AI;
+using Microsoft.Agents.AI.Hosting;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
-using Microsoft.Agents.AI.Hosting;
-using HelloWorldAgents.API;
+using OpenAI;
+using OpenAI.Chat;
+using System.ClientModel;
+using System.ComponentModel;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,11 +17,21 @@ builder.AddServiceDefaults();
 builder.Services.AddOpenApi();
 
 // Uncomment to use GitHub Models
-builder.AddOpenAIClient("chat", settings =>
-    {
-        settings.EnableSensitiveTelemetryData = true;
-    })
-    .AddChatClient(Environment.GetEnvironmentVariable("MODEL_NAME")!);
+//builder.AddOpenAIClient("chat", settings =>
+//    {
+//        settings.Endpoint = new Uri("https://models.github.ai/inference");
+//        settings.EnableSensitiveTelemetryData = true;
+//    })
+//    .AddChatClient(Environment.GetEnvironmentVariable("MODEL_NAME")!);
+
+builder.Services.AddSingleton(sp =>
+{
+    return new ChatClient(
+            "gpt-4o-mini",
+            new ApiKeyCredential(Environment.GetEnvironmentVariable("GITHUB_TOKEN")!),
+            new OpenAIClientOptions { Endpoint = new Uri("https://models.github.ai/inference") })
+        .AsIChatClient();
+});
 
 builder.AddAIAgent("Writer", (sp, key) =>
 {
@@ -55,7 +68,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 
     // Enable static file serving from wwwroot
-    app.UseStaticFiles();    
+    app.UseStaticFiles();
 }
 
 
@@ -72,7 +85,7 @@ app.MapGet("/agent/chat", async (
             .CreateGroupChatBuilderWith(agents =>
                 new RoundRobinRoutingPolicy(agents)
                 {
-                    MaximumIterationCount = 2
+                    MaximumIterationCount = 3
                 })
             .AddParticipants(writer, editor)
             .Build();

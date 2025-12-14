@@ -21,7 +21,7 @@ Get started instantly with GitHub Codespaces - a fully configured development en
 
 This will create a new codespace with all dependencies pre-installed and configured, including:
 
-- .NET 9.0 SDK
+- .NET 8.0 SDK
 - Docker support
 - Aspire CLI + tooling
 - Git integration

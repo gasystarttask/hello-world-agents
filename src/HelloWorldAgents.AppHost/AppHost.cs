@@ -2,7 +2,7 @@ using Aspire.Hosting.GitHub;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var model = GitHubModel.OpenAI.OpenAIGPT4oMini;
+var model = GitHubModel.OpenAI.OpenAIO1Mini;
 
 var chatDeployment = builder.AddGitHubModel("chat", model);
 
