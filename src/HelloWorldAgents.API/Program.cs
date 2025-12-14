@@ -3,6 +3,7 @@ using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Workflows;
 using Microsoft.Extensions.AI;
 using Microsoft.Agents.AI.Hosting;
+using HelloWorldAgents.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,14 +70,14 @@ app.MapGet("/agent/chat", async (
     Workflow workflow =
         AgentWorkflowBuilder
             .CreateGroupChatBuilderWith(agents =>
-                new AgentWorkflowBuilder.RoundRobinGroupChatManager(agents)
+                new RoundRobinRoutingPolicy(agents)
                 {
                     MaximumIterationCount = 2
                 })
             .AddParticipants(writer, editor)
             .Build();
 
-    AIAgent workflowAgent = await workflow.AsAgentAsync();
+    AIAgent workflowAgent = workflow.AsAgent();
 
     AgentRunResponse response = await workflowAgent.RunAsync(prompt);
     return Results.Ok(response);

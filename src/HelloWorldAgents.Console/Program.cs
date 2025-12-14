@@ -18,9 +18,9 @@ AIAgent writer = new ChatClientAgent(
     new ChatClientAgentOptions
     {
         Name = "Writer",
-        Instructions = "Write stories that are engaging and creative.",
         ChatOptions = new ChatOptions
         {
+            Instructions = "Write stories that are engaging and creative.",
             Tools = [
                 AIFunctionFactory.Create(GetAuthor),
                 AIFunctionFactory.Create(FormatStory)
@@ -33,7 +33,10 @@ AIAgent editor = new ChatClientAgent(
     new ChatClientAgentOptions
     {
         Name = "Editor",
-        Instructions = "Make the story more engaging, fix grammar, and enhance the plot."
+        ChatOptions = new ChatOptions
+        {
+            Instructions = "Make the story more engaging, fix grammar, and enhance the plot."
+        }
     });
 
 // Create a workflow that connects writer to editor
@@ -41,7 +44,7 @@ Workflow workflow =
     AgentWorkflowBuilder
         .BuildSequential(writer, editor);
 
-AIAgent workflowAgent = await workflow.AsAgentAsync();
+AIAgent workflowAgent = workflow.AsAgent();
 
 AgentRunResponse workflowResponse =
     await workflowAgent.RunAsync("Write a short story about a haunted house.");
